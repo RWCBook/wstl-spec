@@ -2,8 +2,8 @@
 :toc:
 
 == Status
-Authors::
- * Mike Amundsen, mca@amundsen.com
+Author::
+ Mike Amundsen, mca@amundsen.com
   
 Status::
   *[white red-background]#Working Draft#* -- _Only experimental and `proof-of-concept' apps should be built on this unstable draft._
@@ -44,7 +44,24 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 == The +WeSTL+ Document Model
 The +WeSTL+ document MUST be a valid JSON document per <<RFC4627,[RFC4627]>>. A +WeSTL+ document has a very simple format. However, it is also easily extended to fit a local Web service implementor's needs. Below is a top-down survey of the +WeSTL+ document model.
 
-=== Elements
+=== The +wstl+ Object
+The +wstl+ object is the root object of every +WeSTL+ document. It has a few child properties and MAY be extended with custom properties.
+
+==== Quick View
+The +wstl+ object looks like this:
+
+----
+{
+  "wstl" : {
+    "title" : "...",
+    "actions" : [],
+    "data" ; []
+  }
+}
+----
+
+==== Details
+Here are the details:
 
 +wstl+ :: 
  The top-level element in every +WeSTL+ document. This is a REQUIRED element.
@@ -58,8 +75,27 @@ The +WeSTL+ document MUST be a valid JSON document per <<RFC4627,[RFC4627]>>. A 
 +title+ ::
  An OPTIONAL child property of the +wstl+ element. It SHOULD be set to the title string of the runtime resource. Document parsers MUST continue to process the document even when this element is missing.
 
-==== The +action+ Object
+=== The +action+ Object
 The +action+ object is an anonymous JSON object that contains meta-data information about each state transition. This object contains a number of properties. The only one that is REQUIRED is the +name+ property. All others are OPTIONAL.
+
+==== Quick View
+The +action+ object looks like this:
+
+----
+{
+  "name" : "",
+  "type" : "safe|unsafe",
+  "action" : "read|append|update|remove|diff",
+  "target" : "",
+  "prompt" : "",
+  "href" : "",
+  "rel" : [],
+  "inputs" : []
+}
+----
+
+==== Details
+Here are the details:
 
  +name+::
   The internal name of the transition. This is a REQUIRED property.
@@ -74,12 +110,29 @@ The +action+ object is an anonymous JSON object that contains meta-data informat
  +href+::
   Contains the URL associated with the transition. This value SHOULD only be populated in the *runtime* version of +WeSTL+ documents but MAY be set at *design-time*. If populated, this value MUST comply with the rules of <<rfc3986,[RFC3986]>>
  +rel+::
-  Contains the link relation value for the transition. This value MUST comply with the rules of <<rfc5988,[RFC5988]>>
+  Contains and array of link relation values for the transition. This value MUST comply with the rules of <<rfc5988,[RFC5988]>>
  +inputs+::
   Contains an array of anonymous +input+ objects (see below). 
 
-==== The +input+ Object 
-The +input+ object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The onlye one that is REQUIRED is the +name+ property. All others are OPTIONAL.
+=== The +input+ Object 
+The +input+ object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The only one that is REQUIRED is the +name+ property. All others are OPTIONAL.
+
+==== Quick View
+Here is a quick view of the +input+ object.
+
+----
+{
+  "name" : "",
+  "prompt" : "",
+  "value" : "",
+  "readOnly" : true|false,
+  "required" : true|false,
+  "pattern" : ""
+}
+----
+
+==== Details
+Here are the details.
 
 +name+::
  The name of the input argument.
@@ -207,7 +260,7 @@ Any +WeSTL+ document can be extended in both the *design-time* and *runtime* mod
  . You MUST NOT change the meaning or use of any existing properties or objects listed in the +WeSTL+ specification. 
  . You MAY add new properties and objects as long as they do not cause existing compliant +WeSTL+ document parsers to fail.
 
-== Enclosing Your Extensions
+=== Enclosing Your Extensions
 You SHOULD add new features in +WeSTL+ documents in a way that reduces the likelihood that future changes to the standard format as well as extensions from other document authors will cause a conflict with your extensions. Typically, this means using a unique name for an enclosing object to hold all your extensions. 
 
 For example, the following shows how to safely add the +rolloverText+ extension by enclosing it in a unique identifying object named +"amundsen"+:

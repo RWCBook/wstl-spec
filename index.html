@@ -745,16 +745,12 @@ asciidoc.install(2);
 <div class="sectionbody">
 <div class="dlist"><dl>
 <dt class="hdlist1">
-Authors
+Author
 </dt>
 <dd>
-<div class="ulist"><ul>
-<li>
 <p>
-Mike Amundsen, <a href="mailto:mca@amundsen.com">mca@amundsen.com</a>
+ Mike Amundsen, <a href="mailto:mca@amundsen.com">mca@amundsen.com</a>
 </p>
-</li>
-</ul></div>
 </dd>
 <dt class="hdlist1">
 Status
@@ -821,7 +817,25 @@ Provide a standard format for representor programmers to convert internal servic
 <div class="sectionbody">
 <div class="paragraph"><p>The <code>WeSTL</code> document MUST be a valid JSON document per <a href="#RFC4627">[RFC4627]</a>. A <code>WeSTL</code> document has a very simple format. However, it is also easily extended to fit a local Web service implementor&#8217;s needs. Below is a top-down survey of the <code>WeSTL</code> document model.</p></div>
 <div class="sect2">
-<h3 id="_elements">Elements</h3>
+<h3 id="_the_code_wstl_code_object">The <code>wstl</code> Object</h3>
+<div class="paragraph"><p>The <code>wstl</code> object is the root object of every <code>WeSTL</code> document. It has a few child properties and MAY be extended with custom properties.</p></div>
+<div class="sect3">
+<h4 id="_quick_view">Quick View</h4>
+<div class="paragraph"><p>The <code>wstl</code> object looks like this:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{
+  "wstl" : {
+    "title" : "...",
+    "actions" : [],
+    "data" ; []
+  }
+}</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_details">Details</h4>
+<div class="paragraph"><p>Here are the details:</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 <code>wstl</code> 
@@ -856,9 +870,31 @@ Provide a standard format for representor programmers to convert internal servic
 </p>
 </dd>
 </dl></div>
-<div class="sect3">
-<h4 id="_the_code_action_code_object">The <code>action</code> Object</h4>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_code_action_code_object">The <code>action</code> Object</h3>
 <div class="paragraph"><p>The <code>action</code> object is an anonymous JSON object that contains meta-data information about each state transition. This object contains a number of properties. The only one that is REQUIRED is the <code>name</code> property. All others are OPTIONAL.</p></div>
+<div class="sect3">
+<h4 id="_quick_view_2">Quick View</h4>
+<div class="paragraph"><p>The <code>action</code> object looks like this:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{
+  "name" : "",
+  "type" : "safe|unsafe",
+  "action" : "read|append|update|remove|diff",
+  "target" : "",
+  "prompt" : "",
+  "href" : "",
+  "rel" : [],
+  "inputs" : []
+}</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_details_2">Details</h4>
+<div class="paragraph"><p>Here are the details:</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 <code>name</code>
@@ -913,7 +949,7 @@ Provide a standard format for representor programmers to convert internal servic
 </dt>
 <dd>
 <p>
-  Contains the link relation value for the transition. This value MUST comply with the rules of <a href="#rfc5988">[RFC5988]</a>
+  Contains and array of link relation values for the transition. This value MUST comply with the rules of <a href="#rfc5988">[RFC5988]</a>
 </p>
 </dd>
 <dt class="hdlist1">
@@ -926,9 +962,28 @@ Provide a standard format for representor programmers to convert internal servic
 </dd>
 </dl></div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_the_code_input_code_object">The <code>input</code> Object</h3>
+<div class="paragraph"><p>The <code>input</code> object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The only one that is REQUIRED is the <code>name</code> property. All others are OPTIONAL.</p></div>
 <div class="sect3">
-<h4 id="_the_code_input_code_object">The <code>input</code> Object</h4>
-<div class="paragraph"><p>The <code>input</code> object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The onlye one that is REQUIRED is the <code>name</code> property. All others are OPTIONAL.</p></div>
+<h4 id="_quick_view_3">Quick View</h4>
+<div class="paragraph"><p>Here is a quick view of the <code>input</code> object.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{
+  "name" : "",
+  "prompt" : "",
+  "value" : "",
+  "readOnly" : true|false,
+  "required" : true|false,
+  "pattern" : ""
+}</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_details_3">Details</h4>
+<div class="paragraph"><p>Here are the details.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
 <code>name</code>
@@ -1126,11 +1181,8 @@ You MAY add new properties and objects as long as they do not cause existing com
 </p>
 </li>
 </ol></div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_enclosing_your_extensions">Enclosing Your Extensions</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="_enclosing_your_extensions">Enclosing Your Extensions</h3>
 <div class="paragraph"><p>You SHOULD add new features in <code>WeSTL</code> documents in a way that reduces the likelihood that future changes to the standard format as well as extensions from other document authors will cause a conflict with your extensions. Typically, this means using a unique name for an enclosing object to hold all your extensions.</p></div>
 <div class="paragraph"><p>For example, the following shows how to safely add the <code>rolloverText</code> extension by enclosing it in a unique identifying object named <code>"amundsen"</code>:</p></div>
 <div class="listingblock">
@@ -1149,6 +1201,7 @@ You MAY add new properties and objects as long as they do not cause existing com
   },</code></pre>
 </div></div>
 <div class="paragraph"><p>This opens a wide set of possibilities for extending <code>WeSTL</code> documents.</p></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1210,7 +1263,7 @@ Iralki Nadareishvili.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-12-27 00:10:05 EST
+Last updated 2015-12-27 00:27:07 EST
 </div>
 </div>
 </body>
