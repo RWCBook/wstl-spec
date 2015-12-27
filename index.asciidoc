@@ -1,0 +1,273 @@
+= WeSTL - Web Service Transition Language
+:toc:
+
+== Status
+Authors::
+ * Mike Amundsen, mca@amundsen.com
+  
+Status::
+  *[white red-background]#Working Draft#* -- _Only experimental and `proof-of-concept' apps should be built on this unstable draft._
+
+////
+  *[white red-background]#Working Draft#* -- _Only experimental and `proof-of-concept' apps should be built on this unstable draft._
+  *[black yellow-background]#Stable Draft#* _While stable, this is still a *draft* specification and it MAY introduce breaking changes_
+  *[white blue-background]#Submitted to IANA#* -- _This specification is not expected to introduce any breaking changes for this media-type._
+  *[white green-background]#Approved by IANA#* -- _This specification will not introduce any breaking changes for this media-type._
+////
+
+Last Updated::
+  {docdate}
+
+== General
+This document contains the specifications for the +WeSTL+ format used in the book _RESTful Web Clients_ by Mike Amundsen. This format is used to drive the server-side representor pattern. The +WeSTL+ format exists in two different `states'. In its *design-time* state, it contains the list of all possible state transitions for a Web service. In its *runtime* state, it contains the list of the _selected_ transitions for the current resource along with any data assocaited with that resource. The *design-time* document can be used to define all possible transitions including possible arugments for querying or writing data. The *runtime* document can be passed to a module that can turn the +WeSTL+ document into a _representation_ format (e.g. HTML, Collection+JSON, HAL, etc.).
+
+=== Design Goals
+This format was designed to make it easier for service developers to focus on the state transition details of a Web service instead of the resource details. To that end, a minimal +WeSTL+ document contains a list of possible state transitions.
+
+The *design-time* version of the document contains nothing more than a list of possible state transitions. Each transition contains meta-data about the transition including possible arguments to be used to executing queries or writing data. There is no indication of which _resource_ to which these transitions belong. In fact, many of the transitions will occur on several resouces. For example the +home+ transition (that leads to the home page of the service) might appear on _every_ resource.
+
+The *runtime* version of the document contains a filtered list of the state transitions -- the ones that apply to the current resource request -- along with a collection of data associated with that same resource request. In this case, the +WeSTL+ document represents all the _applicable_ state transitions for the current runtime context. Since this document has a standardized format, it can be populated and then passed to a module designed to convert the +WeSTL+ document into a registered media type format such as HTML, HAL, Collection+JSON, etc.
+
+Thus, there are two goals for the +WeSTL+ format:
+
+ . Provide an easy way for service developers to focus on state transitions
+ . Provide a standard format for representor programmers to convert internal service state into registered media type representations.
+
+=== Compliance
+An implementation is not compliant if it fails to satisfy one or more of the MUST or REQUIRED elements. An implementation that satisfies all the MUST and REQUIRED elements as well as all the SHOULD and RECOMMENDED elements is said to be "unconditionally compliant"; one that satisfies all the MUST and REQUIRED elements but not all the SHOULD and RECOMMENDED elements is said to be "conditionally compliant."
+
+[NOTE]
+====
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC <<rfc2119,[RFC2119]>>.
+====
+
+== The +WeSTL+ Document Model
+The +WeSTL+ document MUST be a valid JSON document per <<RFC4627,[RFC4627]>>. A +WeSTL+ document has a very simple format. However, it is also easily extended to fit a local Web service implementor's needs. Below is a top-down survey of the +WeSTL+ document model.
+
+=== Elements
+
++wstl+ :: 
+ The top-level element in every +WeSTL+ document. This is a REQUIRED element.
+
++actions+ ::
+ A RECOMMENDED child property of the +wstl+ element. If it exists, it MUST be an array of +action+ objects (see below). Parsers MUST continue to process this document even when this element is missing.
+
++data+ ::
+ A RECOMMENDED child property of the +wstl+ element. If it exists, it MUST be an array of JSON objects that represent the data associated with the runtime request. The +data+ element is an _open_ format and MAY contain any other valid JSON content.
+
++title+ ::
+ An OPTIONAL child property of the +wstl+ element. It SHOULD be set to the title string of the runtime resource. Document parsers MUST continue to process the document even when this element is missing.
+
+==== The +action+ Object
+The +action+ object is an anonymous JSON object that contains meta-data information about each state transition. This object contains a number of properties. The only one that is REQUIRED is the +name+ property. All others are OPTIONAL.
+
+ +name+::
+  The internal name of the transition. This is a REQUIRED property.
+ +type+::
+  Indicates the network request type for the transition. it MUST be set to one of the following values: +safe+ or +unsafe+.
+ +action+::
+  Indicates the application request type for the transition. It MUST be set to one of the following values: +read+, +append+, +replace+, +remove+, +diff+.
+ +target+::
+  Contains a space-separated list of string values. These values can be used to _tag_ the transition for later search/retrieval.
+ +prompt+::
+  Contains a string that represents the human prompt for this transition. This value can be used as labels for links and forms.
+ +href+::
+  Contains the URL associated with the transition. This value SHOULD only be populated in the *runtime* version of +WeSTL+ documents but MAY be set at *design-time*. If populated, this value MUST comply with the rules of <<rfc3986,[RFC3986]>>
+ +rel+::
+  Contains the link relation value for the transition. This value MUST comply with the rules of <<rfc5988,[RFC5988]>>
+ +inputs+::
+  Contains an array of anonymous +input+ objects (see below). 
+
+==== The +input+ Object 
+The +input+ object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The onlye one that is REQUIRED is the +name+ property. All others are OPTIONAL.
+
++name+::
+ The name of the input argument.
++prompt+::
+ The human-readable prompt associated with the argument.
++value+::
+ The value for this argument. This MAY be left blank and filled in at runtime. It MAY contain a placeholder that complies with the <<rfc6570,[RFC6570]>> specification and may be resolved at runtime. 
++readOnly+::
+ A flag to indicate this value is to be rendered as _read-only_ at runtime. If it exists, its value MUST be set to +true+ or +false+
++required+::
+ A flag to indicate this value is an required input. If it exists, its value MUST be set to +true+ or +false+
++pattern+::
+ A regex value to be used as an input validator at runtime. If it exists, its value MUST comply with the <<htmlPattern,[HTMLPattern]>> specification.
+
+== Sample +WeSTL+ Documents
+Below are sample +WeSTL+ documents for reference.
+
+=== A Design-Time +WeSTL+ Document
+Below is a +WeSTL+ document in its *design-time* mode. It conatins a list of all the possible state transitions for a Web service offering a seach service.
+
+----
+{
+  "wstl": {
+    "actions": [
+      {
+        "name": "homeLink",
+        "type": "safe",
+        "action": "read",
+        "kind": "",
+        "target": "list menu",
+        "prompt": "Home",
+      },
+      {
+        "name": "searchLink",
+        "type": "safe",
+        "action": "read",
+        "kind": "search",
+        "target": "list menu",
+        "prompt": "Search",
+      },
+      {
+        "name": "searchForm",
+        "type": "safe",
+        "action": "read",
+        "kind": "search",
+        "target": "list form",
+        "prompt": "Search",
+        "inputs": [
+          {
+            "name": "text",
+            "prompt": "Search Text",
+            "value": "",
+            "required" : true
+          }
+        }
+      }
+    ]
+  }
+}
+----
+
+Note that this document contains three state transitions: 
+
+ . The one that leads to the home page (+homeLink+)
+ . The one that leads to the search form (+searchLink+) 
+ . The one that leads to the search results (+searchForm+)
+ 
+=== A Run-Time +WeSTL+ Document
+Below is a +WeSTL+ document in its *runtime* mode. It conatins a list of all the _appropriate state transitions for a running Web service in a specific state. In this case, this document represents the state of the service once it has executed a search and is ready for the next inputs.
+
+----
+{
+  "wstl": {
+    "actions": [
+      {
+        "name": "homeLink",
+        "type": "safe",
+        "action": "read",
+        "kind": "",
+        "target": "list menu",
+        "prompt": "Home",
+      },
+      {
+        "name": "searchForm",
+        "type": "safe",
+        "action": "read",
+        "kind": "search",
+        "target": "list form",
+        "prompt": "Search",
+        "inputs": [
+          {
+            "name": "text",
+            "prompt": "Search Text",
+            "value": "Danny",
+            "required" : true
+          }
+        }
+      }
+    ],
+    "data": [
+      {
+        "id": "1a14qx7qc81",
+        "title": "Danny Boy"
+      },
+      {
+        "id": "1q2w3e43r",
+        "title": "Danny Tremane"
+      },
+      {
+        "id": "azsxdcfvgb",
+        "title": "Danny Two-Shoes"
+      },
+      
+    ]  
+  }
+}
+----
+
+Note the transition that represents the execute-able FORM contains the last search value (this is not a requirement, just a nice touch). Also note the +data+ section that represents the data records found in the last search execution. Finally, you may notice that the +searchLink+ transition is missing in this runtime instance of the +WeSTL+ document. The service has apparently decided that there is no need for this link since the current resouce context includes an instance of the search form already.
+
+== Extending +WeSTL+ Documents
+Any +WeSTL+ document can be extended in both the *design-time* and *runtime* modes. The only rules that MUST be followed are:
+
+ . You MUST NOT remove any existing properties or objects listed in the +WeSTL+ specification.
+ . You MUST NOT change the meaning or use of any existing properties or objects listed in the +WeSTL+ specification. 
+ . You MAY add new properties and objects as long as they do not cause existing compliant +WeSTL+ document parsers to fail.
+
+== Enclosing Your Extensions
+You SHOULD add new features in +WeSTL+ documents in a way that reduces the likelihood that future changes to the standard format as well as extensions from other document authors will cause a conflict with your extensions. Typically, this means using a unique name for an enclosing object to hold all your extensions. 
+
+For example, the following shows how to safely add the +rolloverText+ extension by enclosing it in a unique identifying object named +"amundsen"+:
+
+----
+"actions": [
+  {
+    "name": "homeLink",
+    "type": "safe",
+    "action": "read",
+    "kind": "",
+    "target": "list menu",
+    "prompt": "Home",
+    "amundsen" : {
+      "rolloverText" : "Go to the Home page."
+    }
+  },
+----
+ 
+This opens a wide set of possibilities for extending +WeSTL+ documents. 
+
+== References
+Below are the references used in this document.
+
+=== Normative References
+////
+ * [[rfc1867]] [RFC1867] Nebel, E., Masinter, L., "Form-based File Upload in HTML", November 1995, http://tools.ietf.org/search/rfc1867
+////
+
+ * [[rfc2119]] [RFC2119] Bradner, S.,"Key words for use in RFCs to Indicate Requirement Levels", March 1997, http://tools.ietf.org/html/rfc2119
+ * [[rfc3986]] [RFC3986] Berners-Lee, T., Fielding, R., and L. Masinter,"Uniform Resource Identifier (URI): Generic Syntax", January 2005, http://tools.ietf.org/html/rfc3986
+ * [[rfc4627]] [RFC4627] D. Crockford, "The application/json Media Type for JavaScript Object Notation (JSON)", July 2006, http://tools.ietf.org/html/rfc4627
+ * [[rfc5988]] [RFC5988] Nottingham, M., "Web Linking", October 2010, http://tools.ietf.org/html/rfc5988
+ * [[rfc6570]] [RFC6570] Gregorio, J., Fielding, R., Hadley, M., Nottingham, M., Orchard, D., "URI Template", March 2012, http://tools.ietf.org/html/rfc6570
+ * [[htmlPattern]] [HTMLPattern] WHATWG & W3C et. al., "HTML5 - The +pattern+ Attribute",   http://www.w3.org/TR/html5/forms.html#the-pattern-attribute
+
+////
+ * [[rfc2616]] [RFC2616] Fielding, R, et al, "Hypertext Transfer Protocol -- HTTP/1.1", June 1999, https://tools.ietf.org/html/rfc2616
+ * [[rfc5789]] [RFC5789] Dusseault, L., Snell, J., "PATCH Method for HTTP", March 2010, https://tools.ietf.org/html/rfc5789
+ * [[rfc6906]] [RFC6906] Wilde, E., "The `profile' Link Relation Type", March 2013, https://tools.ietf.org/html/rfc6906
+ * [[REC-XML]] [REC-XML] Bray, T., Paoli, J., Sperberg-McQueen, C., Maler, E., Yergeau, F., "Extensible Markup Language (XML) 1.0 (Fifth Edition)", November 2008, http://www.w3.org/TR/REC-xml/
+////
+
+=== Informative References
+TBD
+
+////
+ * [[hfactor]] [HFactor] Amundsen, M. "H Factor",  May 2010, http://amundsen.com/hypermedia/hfactor/
+ * [[iana-rel]] [IANA-REL] "Link Relations, December 2013, http://www.iana.org/assignments/link-relations/link-relations.xhtml
+ * [[mf-rel]] [MF-REL] "Microformat Existing Rel Values", February 2014, http://microformats.org/wiki/existing-rel-values
+ * [[dc-rel]] [DC-REL] "Dublin Core Metadata Element Set, Version 1.1", June 2012, http://dublincore.org/documents/dces/
+ * [[idcoap18]] [CoAP] "Shelby, Z., Hartke, K., Bormann, C., "Constrained Application Protocol (CoAP)", June 28, 2013, https://tools.ietf.org/html/draft-ietf-core-coap-18
+////
+
+== Acknowledgements
+The authors would like to thank everyone who commented upon,
+encouraged, and gave feedback to this specification,
+especially
+Ronnie Mitra,
+Iralki Nadareishvili.
+
+ 
+
