@@ -767,7 +767,7 @@ Last Updated
 </dt>
 <dd>
 <p>
-  2015-12-27
+  2016-01-08
 </p>
 </dd>
 </dl></div>
@@ -828,6 +828,7 @@ Provide a standard format for representor programmers to convert internal servic
   "wstl" : {
     "title" : "...",
     "actions" : [],
+    "content" : {},
     "data" ; []
   }
 }</code></pre>
@@ -851,6 +852,14 @@ Provide a standard format for representor programmers to convert internal servic
 <dd>
 <p>
  A RECOMMENDED child property of the <code>wstl</code> element. If it exists, it MUST be an array of <code>action</code> objects (see below). Parsers MUST continue to process this document even when this element is missing.
+</p>
+</dd>
+<dt class="hdlist1">
+<code>content</code> 
+</dt>
+<dd>
+<p>
+ An OPTIONAL child property of the <code>wstl</code> element. If it exists, it MUST be a valid <code>content</code> object (see below). Parsers MAY use this element to render content for display. Parsers MUST ontinue to process this document even when this element is missing.
 </p>
 </dd>
 <dt class="hdlist1">
@@ -882,6 +891,7 @@ Provide a standard format for representor programmers to convert internal servic
 <div class="content">
 <pre><code>{
   "name" : "",
+  "description" : "",
   "type" : "safe|unsafe",
   "action" : "read|append|update|remove|diff",
   "target" : "",
@@ -905,11 +915,19 @@ Provide a standard format for representor programmers to convert internal servic
 </p>
 </dd>
 <dt class="hdlist1">
+<code>description</code>
+</dt>
+<dd>
+<p>
+  A string that describes this transition. This is an OPTIONAL property. Parsers MAY use this as additional information when rendering the input for users.
+</p>
+</dd>
+<dt class="hdlist1">
 <code>type</code>
 </dt>
 <dd>
 <p>
-  Indicates the network request type for the transition. it MUST be set to one of the following values: <code>safe</code> or <code>unsafe</code>.
+  Indicates the network request type for the transition. It MUST be set to one of the following values: <code>safe</code> or <code>unsafe</code>.
 </p>
 </dd>
 <dt class="hdlist1">
@@ -964,10 +982,47 @@ Provide a standard format for representor programmers to convert internal servic
 </div>
 </div>
 <div class="sect2">
+<h3 id="_the_code_content_code_object">The <code>content</code> Object</h3>
+<div class="paragraph"><p>The <code>content</code> object is an anonymous JSON object that contains information and data for rendering content for viewing. This object contains only two OPTIONAL properties (<code>type</code> and <code>text</code>). If no properties are present, the <code>content</code> element SHOULD be ignored.</p></div>
+<div class="sect3">
+<h4 id="_quick_view_3">Quick View</h4>
+<div class="paragraph"><p>The <code>content</code> object looks like this:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>{
+  "type" : "html|markdown|text",
+  "text" : "..."
+}</code></pre>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_details_3">Details</h4>
+<div class="paragraph"><p>Here are the details:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<code>text</code>
+</dt>
+<dd>
+<p>
+ A string representing the complete content to be rendered. This content MAY require additional parsing based on the value of the <code>type</code> property. If the type property is missing or is an unrecognized value, the contents of <code>text</code> SHOULD be treated as plain text. This is an OPTIONAL property.
+</p>
+</dd>
+<dt class="hdlist1">
+<code>type</code>
+</dt>
+<dd>
+<p>
+ A string representing the type of text that appears in the <code>text</code> property. Valid values are <code>"html"</code>, <code>"markdown"</code>, <code>"text"</code>. This is an OPTIONAL property. Parsers SHOULD use this value as a guide on processing the contents of the <code>text</code> property (e.g. treat the content as <code>"html"</code>, etc.). If this property is missing or contains an unrecognized value, the property SHOULD be treated as if it was set to <code>"text"</code>.
+</p>
+</dd>
+</dl></div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_the_code_input_code_object">The <code>input</code> Object</h3>
 <div class="paragraph"><p>The <code>input</code> object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The only one that is REQUIRED is the <code>name</code> property. All others are OPTIONAL.</p></div>
 <div class="sect3">
-<h4 id="_quick_view_3">Quick View</h4>
+<h4 id="_quick_view_4">Quick View</h4>
 <div class="paragraph"><p>Here is a quick view of the <code>input</code> object.</p></div>
 <div class="listingblock">
 <div class="content">
@@ -982,7 +1037,7 @@ Provide a standard format for representor programmers to convert internal servic
 </div></div>
 </div>
 <div class="sect3">
-<h4 id="_details_3">Details</h4>
+<h4 id="_details_4">Details</h4>
 <div class="paragraph"><p>Here are the details.</p></div>
 <div class="dlist"><dl>
 <dt class="hdlist1">
@@ -1052,6 +1107,7 @@ Provide a standard format for representor programmers to convert internal servic
     "actions": [
       {
         "name": "homeLink",
+        "description" : "View the home page",
         "type": "safe",
         "action": "read",
         "kind": "",
@@ -1060,6 +1116,7 @@ Provide a standard format for representor programmers to convert internal servic
       },
       {
         "name": "searchLink",
+        "description" : "Search page",
         "type": "safe",
         "action": "read",
         "kind": "search",
@@ -1068,6 +1125,7 @@ Provide a standard format for representor programmers to convert internal servic
       },
       {
         "name": "searchForm",
+        "description" : "Search for content",
         "type": "safe",
         "action": "read",
         "kind": "search",
@@ -1115,6 +1173,7 @@ The one that leads to the search results (<code>searchForm</code>)
     "actions": [
       {
         "name": "homeLink",
+        "description" : "View the home page",
         "type": "safe",
         "action": "read",
         "kind": "",
@@ -1123,6 +1182,7 @@ The one that leads to the search results (<code>searchForm</code>)
       },
       {
         "name": "searchForm",
+        "description" : "Search for content",
         "type": "safe",
         "action": "read",
         "kind": "search",
@@ -1263,7 +1323,7 @@ Iralki Nadareishvili.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-12-27 00:27:07 EST
+Last updated 2016-01-08 22:05:38 EST
 </div>
 </div>
 </body>

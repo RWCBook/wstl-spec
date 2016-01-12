@@ -55,6 +55,7 @@ The +wstl+ object looks like this:
   "wstl" : {
     "title" : "...",
     "actions" : [],
+    "content" : {},
     "data" ; []
   }
 }
@@ -69,6 +70,9 @@ Here are the details:
 +actions+ ::
  A RECOMMENDED child property of the +wstl+ element. If it exists, it MUST be an array of +action+ objects (see below). Parsers MUST continue to process this document even when this element is missing.
 
++content+ ::
+ An OPTIONAL child property of the +wstl+ element. If it exists, it MUST be a valid +content+ object (see below). Parsers MAY use this element to render content for display. Parsers MUST ontinue to process this document even when this element is missing. 
+ 
 +data+ ::
  A RECOMMENDED child property of the +wstl+ element. If it exists, it MUST be an array of JSON objects that represent the data associated with the runtime request. The +data+ element is an _open_ format and MAY contain any other valid JSON content.
 
@@ -84,6 +88,7 @@ The +action+ object looks like this:
 ----
 {
   "name" : "",
+  "description" : "",
   "type" : "safe|unsafe",
   "action" : "read|append|update|remove|diff",
   "target" : "",
@@ -99,8 +104,10 @@ Here are the details:
 
  +name+::
   The internal name of the transition. This is a REQUIRED property.
+ +description+::
+  A string that describes this transition. This is an OPTIONAL property. Parsers MAY use this as additional information when rendering the input for users.
  +type+::
-  Indicates the network request type for the transition. it MUST be set to one of the following values: +safe+ or +unsafe+.
+  Indicates the network request type for the transition. It MUST be set to one of the following values: +safe+ or +unsafe+.
  +action+::
   Indicates the application request type for the transition. It MUST be set to one of the following values: +read+, +append+, +replace+, +remove+, +diff+.
  +target+::
@@ -114,6 +121,28 @@ Here are the details:
  +inputs+::
   Contains an array of anonymous +input+ objects (see below). 
 
+=== The +content+ Object
+The +content+ object is an anonymous JSON object that contains information and data for rendering content for viewing. This object contains only two OPTIONAL properties (+type+ and +text+). If no properties are present, the +content+ element SHOULD be ignored. 
+
+==== Quick View
+The +content+ object looks like this:
+
+----
+{
+  "type" : "html|markdown|text",
+  "text" : "..."
+}
+----
+
+==== Details
+Here are the details:
+
++text+::
+ A string representing the complete content to be rendered. This content MAY require additional parsing based on the value of the +type+ property. If the type property is missing or is an unrecognized value, the contents of +text+ SHOULD be treated as plain text. This is an OPTIONAL property.
+ 
++type+::
+ A string representing the type of text that appears in the +text+ property. Valid values are +"html"+, +"markdown"+, +"text"+. This is an OPTIONAL property. Parsers SHOULD use this value as a guide on processing the contents of the +text+ property (e.g. treat the content as +"html"+, etc.). If this property is missing or contains an unrecognized value, the property SHOULD be treated as if it was set to +"text"+. 
+ 
 === The +input+ Object 
 The +input+ object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The only one that is REQUIRED is the +name+ property. All others are OPTIONAL.
 
@@ -159,6 +188,7 @@ Below is a +WeSTL+ document in its *design-time* mode. It conatins a list of all
     "actions": [
       {
         "name": "homeLink",
+        "description" : "View the home page",
         "type": "safe",
         "action": "read",
         "kind": "",
@@ -167,6 +197,7 @@ Below is a +WeSTL+ document in its *design-time* mode. It conatins a list of all
       },
       {
         "name": "searchLink",
+        "description" : "Search page",
         "type": "safe",
         "action": "read",
         "kind": "search",
@@ -175,6 +206,7 @@ Below is a +WeSTL+ document in its *design-time* mode. It conatins a list of all
       },
       {
         "name": "searchForm",
+        "description" : "Search for content",
         "type": "safe",
         "action": "read",
         "kind": "search",
@@ -209,6 +241,7 @@ Below is a +WeSTL+ document in its *runtime* mode. It conatins a list of all the
     "actions": [
       {
         "name": "homeLink",
+        "description" : "View the home page",
         "type": "safe",
         "action": "read",
         "kind": "",
@@ -217,6 +250,7 @@ Below is a +WeSTL+ document in its *runtime* mode. It conatins a list of all the
       },
       {
         "name": "searchForm",
+        "description" : "Search for content",
         "type": "safe",
         "action": "read",
         "kind": "search",
