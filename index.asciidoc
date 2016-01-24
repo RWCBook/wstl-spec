@@ -45,7 +45,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 The +WeSTL+ document MUST be a valid JSON document per <<RFC4627,[RFC4627]>>. A +WeSTL+ document has a very simple format. However, it is also easily extended to fit a local Web service implementor's needs. Below is a top-down survey of the +WeSTL+ document model.
 
 === The +wstl+ Object
-The +wstl+ object is the root object of every +WeSTL+ document. It has a few child properties and MAY be extended with custom properties.
+The +wstl+ object is the root object of every +WeSTL+ document. It has a small set of child properties and MAY be extended with custom properties.
 
 ==== Quick View
 The +wstl+ object looks like this:
@@ -56,7 +56,8 @@ The +wstl+ object looks like this:
     "title" : "...",
     "actions" : [],
     "content" : {},
-    "data" ; []
+    "data" : [],
+    "related" : {}
   }
 }
 ----
@@ -75,6 +76,9 @@ Here are the details:
  
 +data+ ::
  A RECOMMENDED child property of the +wstl+ element. If it exists, it MUST be an array of JSON objects that represent the data associated with the runtime request. The +data+ element is an _open_ format and MAY contain any other valid JSON content.
+
++related+::
+ An OPTIONAL child property of the +wstl+ element. If it exists, it MUST be an object populated by one or more named arrays (see below).
 
 +title+ ::
  An OPTIONAL child property of the +wstl+ element. It SHOULD be set to the title string of the runtime resource. Document parsers MUST continue to process the document even when this element is missing.
@@ -143,6 +147,28 @@ Here are the details:
 +type+::
  A string representing the type of text that appears in the +text+ property. Valid values are +"html"+, +"markdown"+, +"text"+. This is an OPTIONAL property. Parsers SHOULD use this value as a guide on processing the contents of the +text+ property (e.g. treat the content as +"html"+, etc.). If this property is missing or contains an unrecognized value, the property SHOULD be treated as if it was set to +"text"+. 
  
+=== The +related+ Object
+The +related+ object contains a set of one or more named arrays. Each array is a list of anonymous objects that represent shared, related data for this document. The lists in the +related+ object are used by the +suggest+ processing when rendering input options (see below).
+
+==== Quick View
+Here is a quick view of the +related+ object.
+
+----
+"related" : {
+  "NAME" : []
+}
+----
+ 
+The +"NAME"+ in the above example is set to a specific value in document. For example, if the list contained a set of users, +related+ object might look like this:
+
+----
+"related" : {
+  "userList" : []
+}
+----
+
+The value of each array is an _open_ format and MAY contain any other valid JSON content.
+ 
 === The +input+ Object 
 The +input+ object is an anonymous JSON object that contains meta-data information about each input argument for a state stransition. This object contains a number of properties. The only one that is REQUIRED is the +name+ property. All others are OPTIONAL.
 
@@ -156,7 +182,9 @@ Here is a quick view of the +input+ object.
   "value" : "",
   "readOnly" : true|false,
   "required" : true|false,
-  "pattern" : ""
+  "pattern" : "",
+  "type" : "textarea"|"select",
+  "suggest" : []|{}
 }
 ----
 
@@ -175,6 +203,53 @@ Here are the details.
  A flag to indicate this value is an required input. If it exists, its value MUST be set to +true+ or +false+
 +pattern+::
  A regex value to be used as an input validator at runtime. If it exists, its value MUST comply with the <<htmlPattern,[HTMLPattern]>> specification.
++type+::
+ An OPTIONAL property indicating the display type used when rendering the input. Valid values are +textarea+ (render as a multiline input) and +select+ (render as a list of input options). If this property is missing or set of an unknown value, the input SHOULD be rendered as a simple text input.
++suggest+::
+ An OPTIONAL property indicated the values to use when rendering a +select+-type input of options. The +suggest+ object somes in two forms: 1) an array of values (see Suggest Arrays) or 2) a reference to +related+ data (see Suggest Related Data). It is up to the rendering engine to decide how to handle each form of +suggest+ information -- including ignoring it completely.
+ 
+=== Suggest Arrays
+The +suggest+ array is an OPTIONAL collection of anonyous name-value pair objects for use when rendering a +select+-type input of options.
+
+==== Quick View
+Here is a quick view of the +suggest+ array object.
+
+----
+"suggest" : [
+  {"value" : "S", "text" : "Small"},
+  {"value" : "M", "text" : "Medium"},
+  {"value" : "L", "text" : "Large"}
+]
+----
+
+==== Details
+The +suggest+ array contains one or more anonymous name-value pair objects. Rendering engines SHOULD be prepared for only _one_ of the properties (+value+ or +text+) to appear at runtime. When this happens, the value of the existing property SHOULD be used for _both_ properties. For example, if only a set of +value+ properties are supplied, the rendering engine SHOULD assume the missing +text+ property is set to the same value as the +value+ property. 
+
+=== Suggest Related Data
+The +suggest+ related data object is an OPTIONAL object with three properties for use when rendering a +select+-type input of options. The properties (+related+, +value+, and +text+) are used to lookup data in the +related+ section of the document and render as input options.
+
+==== Quick View
+Here is a quick view of the +suggest+ related data object.
+
+----
+"suggest" : {
+  "related" : "userList",
+  "value" : "id",
+  "text" : "userName"
+}
+----
+
+==== Details
+The +suggest+ related data object is an OPTIONAL object with three properties for use when rendering a +select+-type input of options. 
+
++related+::
+ The value of +related+ is the name of a list in the +related+ section of the document. This is a REQUIRED property. If this property is missing or set to a value that does not match a named list in the +related+ section of the document, then this +suggest+ object SHOULD be ingored.
+ 
++value+::
+ This contains the _property-name_ of the items in the list pointed to by the +related+ property. This is a REQUIRED property. This will be used as the _selected value_ when rendering input options. If this property is missing or set to a value that does not match a property name in the +related+ section list, then this +suggest+ object SHOULD be ingored.
+ 
++text+::
+ This contains the _property-name_ of the items in the list pointed to by the +related+ property. This is a REQUIRED property. This will be used as the _display value_ when rendering input options. If this property is missing or set to a value that does not match a property name in the +related+ section list, then this +suggest+ object SHOULD be ingored.
 
 == Sample +WeSTL+ Documents
 Below are sample +WeSTL+ documents for reference.
@@ -218,6 +293,13 @@ Below is a +WeSTL+ document in its *design-time* mode. It conatins a list of all
             "prompt": "Search Text",
             "value": "",
             "required" : true
+          },
+          {
+            "name": "external",
+            "prompt": "External Search?",
+            "value": "",
+            "required: true,
+            "suggest": [{"value":"true"},{"value":"false"}]
           }
         }
       }
@@ -262,6 +344,13 @@ Below is a +WeSTL+ document in its *runtime* mode. It conatins a list of all the
             "prompt": "Search Text",
             "value": "Danny",
             "required" : true
+          },
+          {
+            "name": "external",
+            "prompt": "External Search?",
+            "value": "",
+            "required: true,
+            "suggest": [{"value":"true"},{"value":"false"}]
           }
         }
       }
