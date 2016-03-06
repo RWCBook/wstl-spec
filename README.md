@@ -1,3 +1,3 @@
-# transitions-specification
+# PROFILE OBJECT DISPLAY Spec
 
-Working document for the transitions.js format.
+Working document for the POD specification.
