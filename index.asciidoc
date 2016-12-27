@@ -33,6 +33,68 @@ Thus, there are two goals for the +WeSTL+ format:
  . Provide an easy way for service developers to focus on state transitions
  . Provide a standard format for representor programmers to convert internal service state into registered media type representations.
 
+=== Sample Document
+Below is a sample +WeSTL+ document (in its *runtime* mode). It contains a list of all the _appropriate state transitions for a running Web service in a specific state.
+
+----
+{
+  "wstl": {
+    "actions": [
+      {
+        "name": "homeLink",
+        "description" : "View the home page",
+        "type": "safe",
+        "action": "read",
+        "kind": "",
+        "target": "list menu",
+        "prompt": "Home",
+      },
+      {
+        "name": "searchForm",
+        "description" : "Search for content",
+        "type": "safe",
+        "action": "read",
+        "kind": "search",
+        "target": "list form",
+        "prompt": "Search",
+        "inputs": [
+          {
+            "name": "text",
+            "prompt": "Search Text",
+            "value": "Danny",
+            "required" : true
+          },
+          {
+            "name": "external",
+            "prompt": "External Search?",
+            "value": "",
+            "required: true,
+            "suggest": [{"value":"true"},{"value":"false"}]
+          }
+        }
+      }
+    ],
+    "data": [
+      {
+        "id": "1a14qx7qc81",
+        "title": "Danny Boy"
+      },
+      {
+        "id": "1q2w3e43r",
+        "title": "Danny Tremane"
+      },
+      {
+        "id": "azsxdcfvgb",
+        "title": "Danny Two-Shoes"
+      },
+      
+    ]  
+  }
+}
+----
+
+See the <<sample-documents, Sample WeSTL Documents>> section for details on this and other +WeSTL+ examples.
+
 === Compliance
 An implementation is not compliant if it fails to satisfy one or more of the MUST or REQUIRED elements. An implementation that satisfies all the MUST and REQUIRED elements as well as all the SHOULD and RECOMMENDED elements is said to be "unconditionally compliant"; one that satisfies all the MUST and REQUIRED elements but not all the SHOULD and RECOMMENDED elements is said to be "conditionally compliant."
 
@@ -40,6 +102,10 @@ An implementation is not compliant if it fails to satisfy one or more of the MUS
 ====
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC <<rfc2119,[RFC2119]>>.
 ====
+
+=== Media Type Identifier
+The +WeSTL+ document format is primarily designed to be used as an _internal_ message model for aiding in the sharing of Web-like transition information and related data. However, it is possible to expose +WeSTL+ documents directly on the Web. For cases where the +WeSTL+ document will be sent as a document over the WWW, the proper media type identifier string to use is:+application/prs.wstl+json+. This value SHOULD be used by the client application when requesting a +WeSTL+ document and SHOULD be used by the server when responding with a +WeSTL+ document.
+
 
 == The +WeSTL+ Document Model
 The +WeSTL+ document MUST be a valid JSON document per <<RFC4627,[RFC4627]>>. A +WeSTL+ document has a very simple format. However, it is also easily extended to fit a local Web service implementor's needs. Below is a top-down survey of the +WeSTL+ document model.
@@ -198,13 +264,13 @@ Here are the details.
 +value+::
  The value for this argument. This MAY be left blank and filled in at runtime. It MAY contain a placeholder that complies with the <<rfc6570,[RFC6570]>> specification and may be resolved at runtime. 
 +readOnly+::
- A flag to indicate this value is to be rendered as _read-only_ at runtime. If it exists, its value MUST be set to +true+ or +false+
+ A flag to indicate this value is to be rendered as _read-only_ at runtime. If it exists, its value MUST be set to +true+ or +false+. If this property is missing or is set to an unknown value, it SHOULD be treated as if it is set to +false+. 
 +required+::
- A flag to indicate this value is an required input. If it exists, its value MUST be set to +true+ or +false+
+ A flag to indicate this value is an required input. If it exists, its value MUST be set to +true+ or +false+. If this property is missing or is set to ann unknown value, it SHOULD be treated as if it is set to +false+. 
 +pattern+::
  A regex value to be used as an input validator at runtime. If it exists, its value MUST comply with the <<htmlPattern,[HTMLPattern]>> specification.
 +type+::
- An OPTIONAL property indicating the display type used when rendering the input. Valid values are +textarea+ (render as a multiline input) and +select+ (render as a list of input options). If this property is missing or set of an unknown value, the input SHOULD be rendered as a simple text input.
+ An OPTIONAL property indicating the display type used when rendering the input. Valid values are +textarea+ (render as a multiline input) and +select+ (render as a list of input options). If this property is missing or set of an unknown value, the input SHOULD be rendered as a simple text input (e.g. +type="text"+).
 +suggest+::
  An OPTIONAL property indicated the values to use when rendering a +select+-type input of options. The +suggest+ object somes in two forms: 1) an array of values (see Suggest Arrays) or 2) a reference to +related+ data (see Suggest Related Data). It is up to the rendering engine to decide how to handle each form of +suggest+ information -- including ignoring it completely.
  
@@ -251,6 +317,7 @@ The +suggest+ related data object is an OPTIONAL object with three properties fo
 +text+::
  This contains the _property-name_ of the items in the list pointed to by the +related+ property. This is a REQUIRED property. This will be used as the _display value_ when rendering input options. If this property is missing or set to a value that does not match a property name in the +related+ section list, then this +suggest+ object SHOULD be ingored.
 
+[[sample-documents]]
 == Sample +WeSTL+ Documents
 Below are sample +WeSTL+ documents for reference.
 
@@ -443,6 +510,7 @@ The authors would like to thank everyone who commented upon,
 encouraged, and gave feedback to this specification,
 especially
 Ronnie Mitra,
+Stephen Mizell,
 Iralki Nadareishvili.
 
  
