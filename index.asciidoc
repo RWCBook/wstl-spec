@@ -121,7 +121,7 @@ Here are the details:
  +href+::
   Contains the URL associated with the transition. This value SHOULD only be populated in the *runtime* version of +WeSTL+ documents but MAY be set at *design-time*. If populated, this value MUST comply with the rules of <<rfc3986,[RFC3986]>>
  +rel+::
-  Contains and array of link relation values for the transition. This value MUST comply with the rules of <<rfc5988,[RFC5988]>>
+  Contains an array of link relation values for the transition. This value MUST comply with the rules of <<rfc5988,[RFC5988]>>
  +inputs+::
   Contains an array of anonymous +input+ objects (see below). 
 
