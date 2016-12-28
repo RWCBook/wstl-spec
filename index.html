@@ -767,7 +767,7 @@ Last Updated
 </dt>
 <dd>
 <p>
-  2016-12-27
+  2016-12-28
 </p>
 </dd>
 </dl></div>
@@ -776,7 +776,7 @@ Last Updated
 <div class="sect1">
 <h2 id="_general">General</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>This document contains the specifications for the <code>WeSTL</code> format used in the book <em>RESTful Web Clients</em> by Mike Amundsen. This format is used to drive the server-side representor pattern. The <code>WeSTL</code> format exists in two different &#8216;states&#8217;. In its <strong>design-time</strong> state, it contains the list of all possible state transitions for a Web service. In its <strong>runtime</strong> state, it contains the list of the <em>selected</em> transitions for the current resource along with any data assocaited with that resource. The <strong>design-time</strong> document can be used to define all possible transitions including possible arugments for querying or writing data. The <strong>runtime</strong> document can be passed to a module that can turn the <code>WeSTL</code> document into a <em>representation</em> format (e.g. HTML, Collection+JSON, HAL, etc.).</p></div>
+<div class="paragraph"><p>This document contains the specifications for the <code>WeSTL</code> format used in the book <em>RESTful Web Clients</em> <a href="#rwcbook">[RWCBook]</a> by Mike Amundsen. This format is used to drive the server-side representor pattern. The <code>WeSTL</code> format exists in two different &#8216;states&#8217;. In its <strong>design-time</strong> state, it contains the list of all possible state transitions for a Web service. In its <strong>runtime</strong> state, it contains the list of the <em>selected</em> transitions for the current resource along with any data assocaited with that resource. The <strong>design-time</strong> document can be used to define all possible transitions including possible arugments for querying or writing data. The <strong>runtime</strong> document can be passed to a module that can turn the <code>WeSTL</code> document into a <em>representation</em> format (e.g. HTML, Collection+JSON, HAL, etc.).</p></div>
 <div class="sect2">
 <h3 id="_design_goals">Design Goals</h3>
 <div class="paragraph"><p>This format was designed to make it easier for service developers to focus on the state transition details of a Web service instead of the resource details. To that end, a minimal <code>WeSTL</code> document contains a list of possible state transitions.</p></div>
@@ -1464,9 +1464,12 @@ You MAY add new properties and objects as long as they do not cause existing com
 <h2 id="_references">References</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Below are the references used in this document.</p></div>
-<div class="sect2">
-<h3 id="_normative_references">Normative References</h3>
 <div class="ulist"><ul>
+<li>
+<p>
+<a id="rwcbook"></a> [RWCBook] Amundsen, M., "RESTful Web Clients", January 2017, <a href="http://g.mamund.com/rwcbook">http://g.mamund.com/rwcbook</a>
+</p>
+</li>
 <li>
 <p>
 <a id="rfc2119"></a> [RFC2119] Bradner, S.,"Key words for use in RFCs to Indicate Requirement Levels", March 1997, <a href="http://tools.ietf.org/html/rfc2119">http://tools.ietf.org/html/rfc2119</a>
@@ -1499,11 +1502,6 @@ You MAY add new properties and objects as long as they do not cause existing com
 </li>
 </ul></div>
 </div>
-<div class="sect2">
-<h3 id="_informative_references">Informative References</h3>
-<div class="paragraph"><p>TBD</p></div>
-</div>
-</div>
 </div>
 <div class="sect1">
 <h2 id="_acknowledgements">Acknowledgements</h2>
@@ -1520,7 +1518,7 @@ Iralki Nadareishvili.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-12-27 11:33:43 EST
+Last updated 2016-12-28 15:14:05 EST
 </div>
 </div>
 </body>

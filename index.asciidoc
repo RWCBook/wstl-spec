@@ -19,7 +19,7 @@ Last Updated::
   {docdate}
 
 == General
-This document contains the specifications for the +WeSTL+ format used in the book _RESTful Web Clients_ by Mike Amundsen. This format is used to drive the server-side representor pattern. The +WeSTL+ format exists in two different `states'. In its *design-time* state, it contains the list of all possible state transitions for a Web service. In its *runtime* state, it contains the list of the _selected_ transitions for the current resource along with any data assocaited with that resource. The *design-time* document can be used to define all possible transitions including possible arugments for querying or writing data. The *runtime* document can be passed to a module that can turn the +WeSTL+ document into a _representation_ format (e.g. HTML, Collection+JSON, HAL, etc.).
+This document contains the specifications for the +WeSTL+ format used in the book _RESTful Web Clients_ <<rwcbook, [RWCBook]>> by Mike Amundsen. This format is used to drive the server-side representor pattern. The +WeSTL+ format exists in two different `states'. In its *design-time* state, it contains the list of all possible state transitions for a Web service. In its *runtime* state, it contains the list of the _selected_ transitions for the current resource along with any data assocaited with that resource. The *design-time* document can be used to define all possible transitions including possible arugments for querying or writing data. The *runtime* document can be passed to a module that can turn the +WeSTL+ document into a _representation_ format (e.g. HTML, Collection+JSON, HAL, etc.).
 
 === Design Goals
 This format was designed to make it easier for service developers to focus on the state transition details of a Web service instead of the resource details. To that end, a minimal +WeSTL+ document contains a list of possible state transitions.
@@ -477,11 +477,7 @@ This opens a wide set of possibilities for extending +WeSTL+ documents.
 == References
 Below are the references used in this document.
 
-=== Normative References
-////
- * [[rfc1867]] [RFC1867] Nebel, E., Masinter, L., "Form-based File Upload in HTML", November 1995, http://tools.ietf.org/search/rfc1867
-////
-
+ * [[rwcbook]] [RWCBook] Amundsen, M., "RESTful Web Clients", January 2017, http://g.mamund.com/rwcbook
  * [[rfc2119]] [RFC2119] Bradner, S.,"Key words for use in RFCs to Indicate Requirement Levels", March 1997, http://tools.ietf.org/html/rfc2119
  * [[rfc3986]] [RFC3986] Berners-Lee, T., Fielding, R., and L. Masinter,"Uniform Resource Identifier (URI): Generic Syntax", January 2005, http://tools.ietf.org/html/rfc3986
  * [[rfc4627]] [RFC4627] D. Crockford, "The application/json Media Type for JavaScript Object Notation (JSON)", July 2006, http://tools.ietf.org/html/rfc4627
@@ -490,16 +486,11 @@ Below are the references used in this document.
  * [[htmlPattern]] [HTMLPattern] WHATWG & W3C et. al., "HTML5 - The +pattern+ Attribute",   http://www.w3.org/TR/html5/forms.html#the-pattern-attribute
 
 ////
+ * [[rfc1867]] [RFC1867] Nebel, E., Masinter, L., "Form-based File Upload in HTML", November 1995, http://tools.ietf.org/search/rfc1867
  * [[rfc2616]] [RFC2616] Fielding, R, et al, "Hypertext Transfer Protocol -- HTTP/1.1", June 1999, https://tools.ietf.org/html/rfc2616
  * [[rfc5789]] [RFC5789] Dusseault, L., Snell, J., "PATCH Method for HTTP", March 2010, https://tools.ietf.org/html/rfc5789
  * [[rfc6906]] [RFC6906] Wilde, E., "The `profile' Link Relation Type", March 2013, https://tools.ietf.org/html/rfc6906
  * [[REC-XML]] [REC-XML] Bray, T., Paoli, J., Sperberg-McQueen, C., Maler, E., Yergeau, F., "Extensible Markup Language (XML) 1.0 (Fifth Edition)", November 2008, http://www.w3.org/TR/REC-xml/
-////
-
-=== Informative References
-TBD
-
-////
  * [[hfactor]] [HFactor] Amundsen, M. "H Factor",  May 2010, http://amundsen.com/hypermedia/hfactor/
  * [[iana-rel]] [IANA-REL] "Link Relations, December 2013, http://www.iana.org/assignments/link-relations/link-relations.xhtml
  * [[mf-rel]] [MF-REL] "Microformat Existing Rel Values", February 2014, http://microformats.org/wiki/existing-rel-values
